@@ -1,1 +1,3 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+# ManyTwitch
+
+ManyTwitch is a personal project that allows you to watch many twitch channels at the same time
