@@ -1,7 +1,14 @@
+/* eslint-disable multiline-ternary */
 import React, { FC, useEffect, useState } from 'react'
 import { Grid, Box, Stack, Select, IconButton } from '@chakra-ui/core'
-import { FiLogOut, FiList } from 'react-icons/fi'
-import { RiLayoutBottomFill, RiLayoutGridFill } from 'react-icons/ri'
+import { motion, AnimateSharedLayout } from 'framer-motion'
+import { FiList } from 'react-icons/fi'
+import {
+  RiChatOffLine,
+  RiChat4Line,
+  RiLayoutBottomFill,
+  RiLayoutGridFill
+} from 'react-icons/ri'
 
 import { useRouter } from 'next/router'
 
@@ -70,12 +77,14 @@ const removeDuplicates = (array: string[]) => {
   return Array.from(new Set(array))
 }
 
+const MotionBox = motion.custom(Box)
+
 const Channels: FC = () => {
   const router = useRouter()
   const queryChannels = router.query.channels
   const [channels, setChannels] = useState([])
   const [selectedChannelChat, setSelectedChannelChat] = useState<string>()
-  const [displayChat, setDisplayChat] = useState(process.browser)
+  const [displayChat, setDisplayChat] = useState(false)
   const [layout, setLayout] = useState({ rows: 1, columns: 1 })
   const [mode, setMode] = useState<Mode>('even')
   const [isOpen, setIsOpen] = useState(false)
@@ -86,6 +95,10 @@ const Channels: FC = () => {
 
   const handleCloseModal = () => {
     setIsOpen(false)
+  }
+
+  const handleToggleChat = () => {
+    setDisplayChat(p => !p)
   }
 
   const handleToggleMode = () => {
@@ -113,8 +126,12 @@ const Channels: FC = () => {
     }
   }, [channels, mode])
 
+  useEffect(() => {
+    setDisplayChat(true)
+  }, [])
+
   return (
-    <>
+    <AnimateSharedLayout>
       <Stack isInline spacing={2}>
         <Grid
           templateColumns={`repeat(${layout.columns}, 1fr)`}
@@ -141,24 +158,34 @@ const Channels: FC = () => {
           })}
         </Grid>
 
-        {displayChat && (
-          <Box width="500px">
-            <Stack h="100%" spacing={2}>
-              <Stack isInline spacing={2}>
-                {/* <IconButton aria-label="Hide sidebar" icon={FiLogOut} /> */}
+        <MotionBox
+          layout
+          initial={{ width: 500 }}
+          animate={{ width: displayChat ? 450 : 50 }}
+        >
+          <Stack h="100%" spacing={2} mr={2}>
+            <Stack isInline={displayChat}>
+              <IconButton
+                aria-label="Add channel"
+                icon={FiList}
+                onClick={handleOpenModal}
+              />
 
-                <IconButton
-                  aria-label="Add channel"
-                  icon={FiList}
-                  onClick={handleOpenModal}
-                />
+              <IconButton
+                aria-label="Toggle chat"
+                icon={displayChat ? RiChatOffLine : RiChat4Line}
+                onClick={handleToggleChat}
+              />
 
-                <IconButton
-                  aria-label="Change columns"
-                  icon={mode === 'even' ? RiLayoutGridFill : RiLayoutBottomFill}
-                  onClick={handleToggleMode}
-                />
+              <IconButton
+                aria-label="Change columns"
+                icon={mode === 'even' ? RiLayoutGridFill : RiLayoutBottomFill}
+                onClick={handleToggleMode}
+              />
+            </Stack>
 
+            {displayChat && (
+              <Stack spacing={2} h="100%">
                 <Select onChange={handleSelectChange}>
                   {channels.map((channel, index) => {
                     const id = channel + index
@@ -173,26 +200,27 @@ const Channels: FC = () => {
                     )
                   })}
                 </Select>
-              </Stack>
 
-              <Box h="100%">
-                {selectedChannelChat && (
-                  <TwitchChat
-                    channel={selectedChannelChat}
-                    id={selectedChannelChat}
-                  />
-                )}
-              </Box>
-            </Stack>
-          </Box>
-        )}
+                <Box h="100%">
+                  {selectedChannelChat && (
+                    <TwitchChat
+                      channel={selectedChannelChat}
+                      id={selectedChannelChat}
+                    />
+                  )}
+                </Box>
+              </Stack>
+            )}
+          </Stack>
+        </MotionBox>
       </Stack>
+
       <ChannelListModal
         initialList={channels}
         isVisible={isOpen}
         onClose={handleCloseModal}
       />
-    </>
+    </AnimateSharedLayout>
   )
 }
 

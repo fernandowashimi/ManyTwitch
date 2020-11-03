@@ -1,17 +1,21 @@
 import React, { FC } from 'react'
 import { Box, BoxProps, useColorMode } from '@chakra-ui/core'
+import { motion } from 'framer-motion'
 import { TwitchPlayer } from 'react-twitch-embed'
 
 interface TwitchPlayerProps extends BoxProps {
   channel: string
   id: string
+  gridArea: string
 }
 
-const Player: FC<TwitchPlayerProps> = ({ channel, id, ...props }) => {
+const MotionBox = motion.custom(Box)
+
+const Player: FC<TwitchPlayerProps> = ({ channel, id, gridArea }) => {
   const { colorMode } = useColorMode()
 
   return (
-    <Box d="inline-block" w="100%" h="100%" {...props}>
+    <MotionBox layout d="inline-block" w="100%" h="100%" gridArea={gridArea}>
       <TwitchPlayer
         channel={channel}
         id={id}
@@ -20,7 +24,7 @@ const Player: FC<TwitchPlayerProps> = ({ channel, id, ...props }) => {
         height="100%"
         muted
       />
-    </Box>
+    </MotionBox>
   )
 }
 
