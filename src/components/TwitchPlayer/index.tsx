@@ -1,17 +1,17 @@
 import React, { FC } from 'react'
-import { Box, useColorMode } from '@chakra-ui/core'
+import { Box, BoxProps, useColorMode } from '@chakra-ui/core'
 import { TwitchPlayer } from 'react-twitch-embed'
 
-interface TwitchPlayerProps {
+interface TwitchPlayerProps extends BoxProps {
   channel: string
   id: string
 }
 
-const Player: FC<TwitchPlayerProps> = ({ channel, id }) => {
+const Player: FC<TwitchPlayerProps> = ({ channel, id, ...props }) => {
   const { colorMode } = useColorMode()
 
   return (
-    <Box d="inline-block" w="100%" h="100%">
+    <Box d="inline-block" w="100%" h="100%" {...props}>
       <TwitchPlayer
         channel={channel}
         id={id}
